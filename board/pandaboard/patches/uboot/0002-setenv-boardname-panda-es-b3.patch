@@ -1,0 +1,23 @@
+--- a/board/ti/panda/panda.c	2019-09-29 13:22:30.042949536 -0700
++++ b/board/ti/panda/panda.c	2019-09-29 13:25:13.042945989 -0700
+@@ -36,6 +36,8 @@
+ 
+ struct omap4_scrm_regs *const scrm = (struct omap4_scrm_regs *)0x4a30a000;
+ 
++u8 is_panda_es_rev_b3(void);
++
+ /**
+  * @brief board_init
+  *
+@@ -102,7 +104,10 @@
+ 		board_id4 = gpio_get_value(PANDA_ES_BOARD_ID_4_GPIO);
+ 
+ #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+-		setenv("board_name", "panda-es");
++		if (is_panda_es_rev_b3())
++			setenv("board_name", "panda-es-b3");
++		else
++			setenv("board_name", "panda-es");
+ #endif
+ 		board_id = ((board_id4 << 4) | (board_id3 << 3) |
+ 			(board_id2 << 2) | (board_id1 << 1) | (board_id0));

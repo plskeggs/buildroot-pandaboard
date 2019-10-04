@@ -1,0 +1,209 @@
+diff -urN a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+--- a/arch/arm/boot/dts/Makefile	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/Makefile	2019-09-27 14:45:18.738601668 -0700
+@@ -489,6 +489,7 @@
+ 	omap4-panda.dtb \
+ 	omap4-panda-a4.dtb \
+ 	omap4-panda-es.dtb \
++	omap4-panda-es-b3.dtb \
+ 	omap4-sdp.dtb \
+ 	omap4-sdp-es23plus.dtb \
+ 	omap4-var-dvk-om44.dtb \
+diff -urN a/arch/arm/boot/dts/omap4.dtsi b/arch/arm/boot/dts/omap4.dtsi
+--- a/arch/arm/boot/dts/omap4.dtsi	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/omap4.dtsi	2019-09-27 14:54:37.754589503 -0700
+@@ -691,6 +691,7 @@
+ 			hw-caps-read-idle-ctrl;
+ 			hw-caps-ll-interface;
+ 			hw-caps-temp-alert;
++                        status = "disabled";
+ 		};
+ 
+ 		emif2: emif@4d000000 {
+@@ -703,6 +704,7 @@
+ 			hw-caps-read-idle-ctrl;
+ 			hw-caps-ll-interface;
+ 			hw-caps-temp-alert;
++                        status = "disabled";
+ 		};
+ 
+ 		ocp2scp@4a0ad000 {
+diff -urN a/arch/arm/boot/dts/omap4-panda-a4.dts b/arch/arm/boot/dts/omap4-panda-a4.dts
+--- a/arch/arm/boot/dts/omap4-panda-a4.dts	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/omap4-panda-a4.dts	2019-09-27 14:50:25.814594986 -0700
+@@ -10,6 +10,18 @@
+ #include "omap443x.dtsi"
+ #include "omap4-panda-common.dtsi"
+ 
++&emif1 {
++	cs1-used;
++	device-handle = <&elpida_ECB240ABACN>;
++        status = "ok";
++};
++
++&emif2 {
++	cs1-used;
++	device-handle = <&elpida_ECB240ABACN>;
++        status = "ok";
++};
++
+ /* Pandaboard Rev A4+ have external pullups on SCL & SDA */
+ &dss_hdmi_pins {
+ 	pinctrl-single,pins = <
+diff -urN a/arch/arm/boot/dts/omap4-panda-common.dtsi b/arch/arm/boot/dts/omap4-panda-common.dtsi
+--- a/arch/arm/boot/dts/omap4-panda-common.dtsi	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/omap4-panda-common.dtsi	2019-09-27 14:48:22.370597672 -0700
+@@ -460,16 +460,6 @@
+ 	};
+ };
+ 
+-&emif1 {
+-	cs1-used;
+-	device-handle = <&elpida_ECB240ABACN>;
+-};
+-
+-&emif2 {
+-	cs1-used;
+-	device-handle = <&elpida_ECB240ABACN>;
+-};
+-
+ &mcbsp1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mcbsp1_pins>;
+diff -urN a/arch/arm/boot/dts/omap4-panda.dts b/arch/arm/boot/dts/omap4-panda.dts
+--- a/arch/arm/boot/dts/omap4-panda.dts	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/omap4-panda.dts	2019-09-27 14:52:59.118591650 -0700
+@@ -14,3 +14,15 @@
+ 	model = "TI OMAP4 PandaBoard";
+ 	compatible = "ti,omap4-panda", "ti,omap4430", "ti,omap4";
+ };
++
++&emif1 {
++	cs1-used;
++	device-handle = <&elpida_ECB240ABACN>;
++	status = "ok";
++};
++
++&emif2 {
++	cs1-used;
++	device-handle = <&elpida_ECB240ABACN>;
++	status = "ok";
++};
+diff -urN a/arch/arm/boot/dts/omap4-panda-es-b3.dts b/arch/arm/boot/dts/omap4-panda-es-b3.dts
+--- a/arch/arm/boot/dts/omap4-panda-es-b3.dts	1969-12-31 16:00:00.000000000 -0800
++++ b/arch/arm/boot/dts/omap4-panda-es-b3.dts	2019-09-27 15:00:50.194581399 -0700
+@@ -0,0 +1,75 @@
++/*
++ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++/dts-v1/;
++
++#include "omap4460.dtsi"
++#include "omap4-panda-common.dtsi"
++
++/ {
++	model = "TI OMAP4 PandaBoard-ES";
++	compatible = "ti,omap4-panda-es", "ti,omap4-panda", "ti,omap4460", "ti,omap4430", "ti,omap4";
++};
++
++/* Audio routing is differnet between PandaBoard4430 and PandaBoardES */
++&sound {
++	ti,model = "PandaBoardES";
++
++	/* Audio routing */
++	ti,audio-routing =
++		"Headset Stereophone", "HSOL",
++		"Headset Stereophone", "HSOR",
++		"Ext Spk", "HFL",
++		"Ext Spk", "HFR",
++		"Line Out", "AUXL",
++		"Line Out", "AUXR",
++		"AFML", "Line In",
++		"AFMR", "Line In";
++};
++
++/* PandaboardES has external pullups on SCL & SDA */
++&dss_hdmi_pins {
++	pinctrl-single,pins = <
++		OMAP4_IOPAD(0x09a, PIN_INPUT_PULLUP | MUX_MODE0)	/* hdmi_cec.hdmi_cec */
++		OMAP4_IOPAD(0x09c, PIN_INPUT | MUX_MODE0)		/* hdmi_scl.hdmi_scl */
++		OMAP4_IOPAD(0x09e, PIN_INPUT | MUX_MODE0)		/* hdmi_sda.hdmi_sda */
++		>;
++};
++
++&omap4_pmx_core {
++	led_gpio_pins: gpio_led_pmx {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x0f6, PIN_OUTPUT | MUX_MODE3)	/* gpio_110 */
++		>;
++	};
++};
++
++&led_wkgpio_pins {
++	pinctrl-single,pins = <
++		OMAP4_IOPAD(0x05c, PIN_OUTPUT | MUX_MODE3)	/* gpio_wk8 */
++	>;
++};
++
++&leds {
++	pinctrl-0 = <
++		&led_gpio_pins
++		&led_wkgpio_pins
++	>;
++
++	heartbeat {
++		gpios = <&gpio4 14 GPIO_ACTIVE_HIGH>;
++	};
++	mmc {
++		gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
++	};
++};
++
++&gpio1 {
++	 ti,no-reset-on-init;
++};
++
++
+diff -urN a/arch/arm/boot/dts/omap4-panda-es.dts b/arch/arm/boot/dts/omap4-panda-es.dts
+--- a/arch/arm/boot/dts/omap4-panda-es.dts	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/omap4-panda-es.dts	2019-09-27 14:51:36.290593452 -0700
+@@ -15,6 +15,18 @@
+ 	compatible = "ti,omap4-panda-es", "ti,omap4-panda", "ti,omap4460", "ti,omap4430", "ti,omap4";
+ };
+ 
++&emif1 {
++	cs1-used;
++	device-handle = <&elpida_ECB240ABACN>;
++	status = "ok";
++};
++
++&emif2 {
++	cs1-used;
++	device-handle = <&elpida_ECB240ABACN>;
++	status = "ok";
++};
++
+ /* Audio routing is differnet between PandaBoard4430 and PandaBoardES */
+ &sound {
+ 	ti,model = "PandaBoardES";
+diff -urN a/arch/arm/boot/dts/omap4-sdp.dts b/arch/arm/boot/dts/omap4-sdp.dts
+--- a/arch/arm/boot/dts/omap4-sdp.dts	2016-03-13 21:28:54.000000000 -0700
++++ b/arch/arm/boot/dts/omap4-sdp.dts	2019-09-27 14:53:52.254590493 -0700
+@@ -501,11 +501,13 @@
+ &emif1 {
+ 	cs1-used;
+ 	device-handle = <&elpida_ECB240ABACN>;
++        status = "ok";
+ };
+ 
+ &emif2 {
+ 	cs1-used;
+ 	device-handle = <&elpida_ECB240ABACN>;
++        status = "ok";
+ };
+ 
+ &keypad {

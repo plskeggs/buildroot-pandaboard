@@ -1,0 +1,21 @@
+--- a/include/configs/ti_omap4_common.h	2019-09-29 13:14:16.246960281 -0700
++++ b/include/configs/ti_omap4_common.h	2019-09-29 13:08:41.098967574 -0700
+@@ -40,7 +40,8 @@
+  * the timings to use or use pre-determined timings (based on using the
+  * dynamic method.  Default to the static timing infomation.
+  */
+-#define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
++/* Comment out next line for ES Rev B3 or A4 with new "M" Micron memory... */
++/* #define CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS */
+ #ifndef CONFIG_SYS_EMIF_PRECALCULATED_TIMING_REGS
+ #define CONFIG_SYS_AUTOMATIC_SDRAM_DETECTION
+ #define CONFIG_SYS_DEFAULT_LPDDR2_TIMINGS
+@@ -130,6 +131,8 @@
+ 			"setenv fdtfile omap4-panda-a4.dtb; fi;" \
+ 		"if test $board_name = panda-es; then " \
+ 			"setenv fdtfile omap4-panda-es.dtb; fi;" \
++		"if test $board_name = panda-es-b3; then " \
++			"setenv fdtfile omap4-panda-es-b3.dtb; fi;" \
+ 		"if test $board_name = duovero; then " \
+ 			"setenv fdtfile omap4-duovero-parlor.dtb; fi;" \
+ 		"if test $fdtfile = undefined; then " \
